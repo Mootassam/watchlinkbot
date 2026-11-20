@@ -217,13 +217,15 @@ test('the limit per client', async () => {
   assert.match(out, /🔴 .*\/slow is <b>DOWN<\/b> — no answer \(timeout\)/);
 });
 
-test('/list shows 🟢/🔴 with reasons and buttons', async () => {
+test('/list: a card per link, a summary line and buttons', async () => {
   const m = mark();
   await say(JOHN, '/list');
   const c = calls.slice(m).find((x) => x.method === 'sendMessage' && x.data.chat_id === '222');
-  assert.match(c.data.text, /Your links \(6\)/);
-  assert.match(c.data.text, /1\. 🟢 .*\/ok — \d+ ms/);
-  assert.match(c.data.text, /2\. 🔴 .*\/err — server error \(500\) · down for 1 min/);
+  const host = S.replace('http://', '');
+  assert.match(c.data.text, /📋 <b>Your links<\/b> · 6\n━+/);
+  assert.ok(c.data.text.includes(`🟢 <b><a href="${S}/ok">${host}/ok</a></b>\n      <i>Online · `), c.data.text);
+  assert.ok(c.data.text.includes(`🔴 <b><a href="${S}/err">${host}/err</a></b>\n      <i>server error (500) · down 1 min</i>`));
+  assert.match(c.data.text, /⚠️ \d of 6 down  ·  ⏱ Checked just now/);
   assert.deepEqual(c.data.reply_markup.inline_keyboard[0].map((b) => b.callback_data), ['check', 'rmlist']);
 });
 
@@ -344,32 +346,44 @@ test('language switch', async () => {
   assert.equal(u.lang, 'en');
 });
 
-test('admin views: /all, /down, /clients, /client ID, /status, /contact', async () => {
+test('admin views: dashboard, down, clients, one client, status, contact — with buttons', async () => {
   let m = mark();
   await say(ADMIN, '/all');
-  let out = joined(m, ADMIN);
-  assert.match(out, /All clients \(3\)/);
-  assert.match(out, /👤 John Doe \(@john\) · id <code>222<\/code>/);
-  assert.match(out, /🔴 .*\/err — server error \(500\)/);
-  assert.match(out, /👤 李 \(@li\)/);
-  assert.ok(out.indexOf('John Doe') < out.indexOf('Boss'), 'clients with a problem come first');
+  let c = calls.slice(m).find((x) => x.method === 'sendMessage' && x.data.chat_id === '111');
+  let out = c.data.text;
+  assert.match(out, /📊 <b>Dashboard<\/b>\n━+\n👥 3 clients  ·  🔗 \d+ links\n🟢 \d+ online  ·  🔴 1 down\n⏱ Last check: /);
+  assert.match(out, /🔴 <b>John Doe<\/b>  @john\n    🔴 <b><a href=".*\/err">/, 'a client with a problem: red, the bad link first');
+  assert.match(out, /🟢 <b>李<\/b>  @li/);
+  assert.match(out, /⚪ <i>No links yet:<\/i> Boss/);
+  assert.ok(out.indexOf('John Doe') < out.indexOf('李'), 'problems first');
+  assert.deepEqual(c.data.reply_markup.inline_keyboard[0].map((b) => b.callback_data), ['a:all', 'a:down', 'a:clients']);
 
-  m = mark(); await say(ADMIN, '/down');
-  out = joined(m, ADMIN);
-  assert.match(out, /Down right now \(1\)/);
-  assert.match(out, /John Doe[\s\S]*\/err/);
+  m = mark(); await press(ADMIN, 'a:down', 55);
+  let ed = calls.slice(m).find((x) => x.method === 'editMessageText');
+  assert.equal(ed.data.message_id, 55, 'buttons change the same message');
+  assert.match(ed.data.text, /🔴 <b>Down right now<\/b> · 1[\s\S]*John Doe[\s\S]*\/err/);
+  assert.doesNotMatch(ed.data.text, /\/ok"/);
 
-  m = mark(); await say(ADMIN, '/clients');
-  assert.match(joined(m, ADMIN), /Clients \(3\)[\s\S]*John Doe \(@john\)[\s\S]*links · 🟢 \d+ · 🔴 1/);
+  m = mark(); await press(ADMIN, 'a:clients', 55);
+  ed = calls.slice(m).find((x) => x.method === 'editMessageText');
+  assert.match(ed.data.text, /👥 <b>Clients<\/b> · 3/);
+  assert.match(ed.data.text, /🔴 <b>John Doe<\/b>  @john\n      <i>🔴 1 of \d+ down · joined \d{4}-\d\d-\d\d<\/i>/);
+  assert.match(ed.data.text, /⚪ <b>Boss<\/b>  @boss  👑\n      <i>no links yet/);
+  const btns = ed.data.reply_markup.inline_keyboard.flat().map((b) => b.callback_data);
+  assert.ok(btns.includes('a:c:222') && btns.includes('a:c:333'), 'a button per client');
 
-  m = mark(); await say(ADMIN, '/client 333');
-  out = joined(m, ADMIN);
-  assert.match(out, /李/); assert.doesNotMatch(out, /John/);
+  m = mark(); await press(ADMIN, 'a:c:333', 55);
+  ed = calls.slice(m).find((x) => x.method === 'editMessageText');
+  assert.match(ed.data.text, /👤 <b>李<\/b>  @li\n🆔 <code>333<\/code> · joined .* · 中文/);
+  assert.doesNotMatch(ed.data.text, /John/);
+
   m = mark(); await say(ADMIN, '/client 12345');
   assert.match(joined(m, ADMIN), /No client with that ID/);
+  m = mark(); await say(ADMIN, '/client');
+  assert.match(joined(m, ADMIN), /Clients<\/b> · 3/, 'no ID: the client list');
 
   m = mark(); await say(ADMIN, '/status');
-  assert.match(joined(m, ADMIN), /Timer: ✅ running[\s\S]*Clients: 3/);
+  assert.match(joined(m, ADMIN), /System status[\s\S]*Timer: ✅ running \(every 5 min\)[\s\S]*👥 3 clients/);
 
   m = mark(); await say(ADMIN, '/contact @mootech');
   assert.match(joined(m, ADMIN), /Contact @mootech/);
@@ -377,7 +391,9 @@ test('admin views: /all, /down, /clients, /client ID, /status, /contact', async 
   assert.match(joined(m, ADMIN), /removed/);
 
   m = mark(); await say(JOHN, '/all');
-  assert.doesNotMatch(joined(m, JOHN), /All clients/, 'clients cannot use admin commands');
+  assert.doesNotMatch(joined(m, JOHN), /Dashboard/, 'clients cannot use admin commands');
+  m = mark(); await press(JOHN, 'a:all', 9);
+  assert.equal(calls.slice(m).filter((x) => x.method === 'editMessageText' || x.method === 'sendMessage').length, 0, 'nor admin buttons');
 });
 
 test('someone who blocked the bot: marked, not checked any more, unblocked when they write again', async () => {
