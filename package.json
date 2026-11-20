@@ -1,0 +1,17 @@
+{
+  "name": "linkwatch",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Telegram bot that watches clients' links every 5 minutes and alerts them (and the admin) when one goes down.",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "test": "node --test --test-concurrency=1 tests/"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "1.2.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8"
+  }
+}
