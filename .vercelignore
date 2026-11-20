@@ -2,3 +2,5 @@ node_modules
 tests
 .env*
 README.md
+.secrets.txt
+.env.local
