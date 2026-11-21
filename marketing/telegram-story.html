@@ -1,0 +1,98 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; }
+  body { font-family: "Segoe UI Variable Display", "Segoe UI", sans-serif; color: #0f172a; background: #f4f6ff; position: relative; }
+
+  /* soft colour blobs */
+  .blob { position: absolute; border-radius: 50%; filter: blur(110px); opacity: .75; }
+  .b1 { width: 760px; height: 760px; background: #7c3aed; top: -260px; right: -220px; opacity: .45; }
+  .b2 { width: 700px; height: 700px; background: #06b6d4; top: 620px; left: -330px; opacity: .35; }
+  .b3 { width: 720px; height: 720px; background: #ec4899; bottom: -300px; right: -260px; opacity: .35; }
+  .noise { position: absolute; inset: 0; background-image: radial-gradient(rgba(15,23,42,.06) 1.5px, transparent 1.5px); background-size: 28px 28px; }
+
+  .wrap { position: relative; height: 100%; padding: 160px 72px 190px; display: flex; flex-direction: column; align-items: center; }
+
+  .pill { display: inline-flex; align-items: center; gap: 12px; padding: 12px 26px; border-radius: 999px; background: rgba(255,255,255,.75);
+    border: 2px solid rgba(124,58,237,.18); box-shadow: 0 8px 30px rgba(124,58,237,.12); font-size: 28px; font-weight: 700; letter-spacing: 3px; color: #6d28d9; }
+
+  h1 { margin-top: 28px; text-align: center; font-size: 92px; line-height: 1.02; font-weight: 800; letter-spacing: -3px; }
+  h1 .g { background: linear-gradient(95deg, #7c3aed 0%, #db2777 55%, #f97316 100%); -webkit-background-clip: text; color: transparent; }
+  .sub { margin-top: 22px; text-align: center; font-size: 37px; line-height: 1.38; color: #334155; max-width: 900px; }
+  .sub b { color: #0f172a; }
+
+  /* the phone */
+  .phone { margin-top: 34px; width: 820px; border-radius: 56px; background: #0f172a; padding: 16px;
+    box-shadow: 0 50px 120px rgba(76, 29, 149, .35), 0 10px 30px rgba(15,23,42,.25); }
+  .screen { border-radius: 42px; overflow: hidden; background: linear-gradient(180deg, #e9eefb, #dfe7fb); }
+  .bar { display: flex; align-items: center; gap: 20px; padding: 20px 28px; background: #fff; border-bottom: 1px solid #e2e8f0; }
+  .av { width: 74px; height: 74px; border-radius: 50%; display: grid; place-items: center; font-size: 40px;
+    background: linear-gradient(135deg, #7c3aed, #ec4899); }
+  .bar b { display: block; font-size: 32px; }
+  .bar small { font-size: 24px; color: #7c3aed; font-weight: 600; }
+  .chat { padding: 22px 26px 26px; display: flex; flex-direction: column; gap: 14px; }
+  .bub { align-self: flex-start; min-width: 600px; max-width: 680px; background: #fff; border-radius: 30px 30px 30px 10px; padding: 18px 28px;
+    box-shadow: 0 6px 18px rgba(15,23,42,.08); font-size: 32px; line-height: 1.4; position: relative; }
+  .bub .h { font-weight: 800; font-size: 34px; }
+  .bub .u { color: #2563eb; font-weight: 600; }
+  .bub .r { color: #64748b; font-size: 28px; }
+  .bub .t { position: absolute; top: 24px; right: 26px; font-size: 22px; color: #94a3b8; }
+  .me { min-width: 0; align-self: flex-end; background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; border-radius: 30px 30px 10px 30px; font-weight: 600; }
+  .me .t { position: static; display: inline; margin-left: 14px; color: rgba(255,255,255,.75); }
+  .alert { border: 3px solid #fecaca; }
+  .ok { border: 3px solid #bbf7d0; }
+
+  /* how it works */
+  .steps { margin-top: 32px; width: 100%; display: flex; gap: 20px; }
+  .step { flex: 1; background: rgba(255,255,255,.78); border: 2px solid rgba(255,255,255,.9); border-radius: 32px; padding: 20px 14px;
+    box-shadow: 0 12px 34px rgba(15,23,42,.08); text-align: center; }
+  .n { width: 58px; height: 58px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; font-size: 30px; font-weight: 800; color: #fff;
+    background: linear-gradient(135deg, #7c3aed, #db2777); }
+  .step b { display: block; margin-top: 14px; font-size: 31px; line-height: 1.2; }
+  .step span { display: block; margin-top: 6px; font-size: 25px; color: #64748b; line-height: 1.3; }
+
+  .cta { margin-top: auto; padding-top: 30px; text-align: center; }
+  .btn { display: inline-flex; align-items: center; gap: 18px; padding: 28px 60px; border-radius: 999px; font-size: 52px; font-weight: 800; color: #fff;
+    background: linear-gradient(95deg, #7c3aed, #db2777); box-shadow: 0 24px 60px rgba(219,39,119,.38); }
+  .note { margin-top: 18px; font-size: 30px; color: #475569; font-weight: 600; letter-spacing: .5px; }
+</style></head>
+<body>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="noise"></div>
+  <div class="wrap">
+    <div class="pill">🔔 FREE WEBSITE MONITOR</div>
+
+    <h1>Is your website<br><span class="g">down right now?</span></h1>
+    <div class="sub">We check your site <b>every 5 minutes, 24/7</b>.<br>If it goes down, you get a <b>Telegram alert instantly</b>.</div>
+
+    <div class="phone"><div class="screen">
+      <div class="bar"><div class="av">🔔</div><div><b>MyLinkWatchBot</b><small>bot · watching your site</small></div></div>
+      <div class="chat">
+        <div class="bub me">yourshop.com<span class="t">14:00 ✓✓</span></div>
+        <div class="bub alert">
+          <div class="h">🔴 Your site is DOWN</div>
+          <div class="u">yourshop.com</div>
+          <div class="r">Reason: server not responding</div>
+          <div class="t">14:05</div>
+        </div>
+        <div class="bub ok">
+          <div class="h">🟢 Back online</div>
+          <div class="u">yourshop.com</div>
+          <div class="r">It was down for 4 minutes</div>
+          <div class="t">14:09</div>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="steps">
+      <div class="step"><div class="n">1</div><b>Open the bot</b><span>Press Start</span></div>
+      <div class="step"><div class="n">2</div><b>Send your link</b><span>One or many</span></div>
+      <div class="step"><div class="n">3</div><b>Get alerts</b><span>Instantly on Telegram</span></div>
+    </div>
+
+    <div class="cta">
+      <div class="btn">@MyLinkWatchBot</div>
+      <div class="note">100% free · No sign-up · Ready in 10 seconds</div>
+    </div>
+  </div>
+<script>window.__end = document.querySelector('.note').getBoundingClientRect().bottom;</script></body></html>
