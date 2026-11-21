@@ -1,0 +1,48 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #fff; }
+  svg { display: block; }
+</style></head>
+<body>
+<!-- 640x640, Telegram shows it as a circle: everything important stays in the middle -->
+<svg width="640" height="640" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7c3aed"/>
+      <stop offset=".55" stop-color="#c026d3"/>
+      <stop offset="1" stop-color="#f43f5e"/>
+    </linearGradient>
+    <radialGradient id="shine" cx=".3" cy=".2" r=".8">
+      <stop offset="0" stop-color="#fff" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#3b0764" flood-opacity=".35"/>
+    </filter>
+  </defs>
+  <rect width="640" height="640" fill="url(#bg)"/>
+  <rect width="640" height="640" fill="url(#shine)"/>
+
+  <!-- signal waves -->
+  <g fill="none" stroke="#fff" stroke-linecap="round" stroke-width="20" opacity=".55">
+    <path d="M150 230 a190 190 0 0 0 0 190"/>
+    <path d="M490 230 a190 190 0 0 1 0 190"/>
+  </g>
+  <g fill="none" stroke="#fff" stroke-linecap="round" stroke-width="20" opacity=".3">
+    <path d="M105 195 a250 250 0 0 0 0 260"/>
+    <path d="M535 195 a250 250 0 0 1 0 260"/>
+  </g>
+
+  <!-- bell -->
+  <g filter="url(#sh)">
+    <path fill="#fff" d="M320 150c-14 0-25 11-25 25v9c-57 12-95 61-95 121v66l-26 34c-8 11 0 26 13 26h266c13 0 21-15 13-26l-26-34v-66c0-60-38-109-95-121v-9c0-14-11-25-25-25z"/>
+    <path fill="#fff" d="M278 448h84c0 23-19 42-42 42s-42-19-42-42z"/>
+  </g>
+
+  <!-- status dot -->
+  <circle cx="410" cy="205" r="52" fill="#22c55e" stroke="#fff" stroke-width="16"/>
+  <path d="M386 205l17 17 31-33" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</body></html>
